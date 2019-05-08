@@ -36,6 +36,13 @@ public class HtmlParser {
                 .collect(Collectors.toList());
     }
 
+    public static List<String> getFileAStrings(String htmlString) {
+        Document document = Jsoup.parse(htmlString);
+        Elements elements = document.select("a");
+        return elements.stream().filter(element -> isDoc(element.attr("href")))
+                .map(Element::toString).collect(Collectors.toList());
+    }
+
     public static List<String> getAValue(String htmlString) {
         Document document = Jsoup.parse(htmlString);
         Elements elements = document.select("a");
@@ -54,23 +61,31 @@ public class HtmlParser {
         return DOC_SUFFIX.contains(split[split.length - 1]);
     }
 
-    public static ImgAndDoc parseImagAndDoc(String htmlString){
-        List<String> hrefs = getAHrefs(htmlString);
-        List<String> images = hrefs.stream().filter(HtmlParser::isImage)
+    public static ImgAndDoc parseImagAndDoc(String htmlString) {
+        Document document = Jsoup.parse(htmlString);
+        Elements aElements = document.select("a");
+        List<String> images = aElements.stream()
+                .filter(element -> isImage(element.attr("href")))
+                .map(element -> element.attr("href"))
                 .collect(Collectors.toList());
-        List<String> docs = hrefs.stream().filter(HtmlParser::isDoc)
+
+        List<FileContent> files = aElements.stream()
+                .filter(element -> isDoc(element.attr("href")))
+                .map(element -> {
+                    String aString = element.toString();
+                    String url = element.attr("href");
+                    String fileText = element.text();
+                    FileContent fileContent = new FileContent();
+                    fileContent.setFileAString(aString);
+                    fileContent.setFileText(fileText);
+                    fileContent.setUrl(url);
+                    return fileContent;
+                })
                 .collect(Collectors.toList());
 
         ImgAndDoc imgAndDoc = new ImgAndDoc();
         imgAndDoc.setImgs(images);
-        imgAndDoc.setDocs(docs);
+        imgAndDoc.setFileContents(files);
         return imgAndDoc;
-    }
-
-    public static void main(String[] args) {
-        String s = "sdf.sd.pdf";
-        String a = "sdf.sd.jpg";
-        System.out.println(isImage(a));
-        System.out.println(isImage(s));
     }
 }

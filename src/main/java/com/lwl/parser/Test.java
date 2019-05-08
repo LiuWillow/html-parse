@@ -1,43 +1,55 @@
 package com.lwl.parser;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-
-import java.io.*;
-import java.util.Objects;
+import java.util.*;
 
 /**
- * date  2019/5/7
- * author liuwillow
- **/
+ * @author liuweilong
+ * @description
+ * @date 2019/5/8 18:32
+ */
 public class Test {
-    public static void main(String[] args) throws IOException {
-        //TODO 先把图片都上传了，放到一个map里，key为图片名，value为路径
+    public static void main(String[] args) {
+        List<BackgroundNews> list = new ArrayList<>();
+        BackgroundNews backgroundNews1 = new BackgroundNews();
+        backgroundNews1.setYear(2018);
+        backgroundNews1.setSortNum(87);
 
-        //TODO 每条数据都构造一个实体
-        File file = new File("D:\\ideaProjects\\test-html-parser\\src\\main\\resources\\test.html");
-        StringBuilder stringBuilder = new StringBuilder();
-        FileInputStream fileInputStream = new FileInputStream(file);
-        byte[] bytes = new byte[1024];
-        while (fileInputStream.read(bytes) != -1) {
-            stringBuilder.append(new String(bytes, "utf-8"));
-        }
-        String htmlString = stringBuilder.toString();
-        ImgAndDoc imgAndDoc = HtmlParser.parseImagAndDoc(htmlString);
-        if (Objects.nonNull(imgAndDoc.getDocs()) && !imgAndDoc.getDocs().isEmpty()) {
-            //TODO 要把文档存起来，理论上要先插入文档，再插入其他数据
-        }
-        if (Objects.nonNull(imgAndDoc.getImgs()) && !imgAndDoc.getImgs().isEmpty()) {
-            //TODO 替换Img
-            for (String imageString : imgAndDoc.getImgs()) {
-                htmlString = htmlString.replaceAll(imageString, "从map里根据imageString拿到的url");
+        BackgroundNews backgroundNews2 = new BackgroundNews();
+        backgroundNews2.setYear(2019);
+        backgroundNews2.setSortNum(56);
+
+
+        BackgroundNews backgroundNews3 = new BackgroundNews();
+        backgroundNews3.setYear(2019);
+        backgroundNews3.setSortNum(42);
+
+        BackgroundNews backgroundNews4 = new BackgroundNews();
+        backgroundNews4.setYear(2019);
+        backgroundNews4.setSortNum(422);
+
+
+        list.add(backgroundNews1);
+        list.add(backgroundNews2);
+        list.add(backgroundNews3);
+        list.add(backgroundNews4);
+
+        Comparator<BackgroundNews> comparator = (new1, new2) -> {
+            //倒叙排列
+            if (new1.getYear() < new2.getYear()) {
+                return 1;
             }
+            if (new1.getYear() > new2.getYear()) {
+                return 0;
+            }
+            if (new1.getSortNum() < new2.getSortNum()) {
+                return 1;
+            }
+            return 0;
+        };
+
+        list.sort(comparator);
+        for (BackgroundNews backgroundNews : list) {
+            System.out.println(backgroundNews.getYear() + "  " + backgroundNews.getSortNum());
         }
-        System.out.println(htmlString);
-
-
-        //TODO 然后把数据存到数据库
     }
 }

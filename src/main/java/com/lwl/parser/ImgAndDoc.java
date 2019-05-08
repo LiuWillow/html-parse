@@ -11,5 +11,5 @@ import java.util.List;
 @Data
 public class ImgAndDoc {
     private List<String> imgs;
-    private List<String> docs;
+    private List<FileContent> fileContents;
 }
